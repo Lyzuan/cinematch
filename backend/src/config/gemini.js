@@ -1,59 +1,39 @@
 /**
  * config/gemini.js
  * Configurações centralizadas da API do Gemini
- * Altere aqui para ajustar o comportamento do modelo sem tocar nos serviços
  */
 
 const geminiConfig = {
-  // Endpoint base da API
   baseUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
 
-  // Modelo utilizado
-  // Opções disponíveis:
-  //   gemini-2.5-flash        → mais rápido, ideal para produção
-  //   gemini-2.5-pro          → mais inteligente, respostas mais elaboradas
-  //   gemini-1.5-flash        → versão anterior, mais estável
+  // gemini-2.5-flash → rápido e eficiente
+  // gemini-2.5-pro   → mais inteligente, respostas mais elaboradas
   model: 'gemini-2.5-flash',
 
-  // Ação do endpoint
   action: 'generateContent',
 
-  // Parâmetros de geração do modelo
   generationConfig: {
-    // Criatividade das respostas (0.0 = determinístico, 2.0 = muito criativo)
-    // 0.7 é um bom equilíbrio para justificativas personalizadas
-    temperature: 0.7,
+    // 0.0 = determinístico | 1.0 = criativo
+    // Baixamos para 0.3 para respostas mais previsíveis e JSON mais limpo
+    temperature: 0.3,
 
-    // Máximo de tokens na resposta
-    // 4096 é suficiente para 5 filmes com justificativas curtas
+    // 4096 garante espaço para 5 itens completos sem truncar
     maxOutputTokens: 4096,
 
-    // Top-P: controla diversidade de vocabulário (0.0 a 1.0)
-    // Valores mais baixos = respostas mais focadas
     topP: 0.9,
-
-    // Top-K: limita o número de tokens considerados por vez
     topK: 40,
   },
 
-  // Configurações de segurança (blocos de conteúdo inapropriado)
-  // BLOCK_NONE        → sem bloqueio
-  // BLOCK_LOW_AND_ABOVE → bloqueia conteúdo potencialmente prejudicial
-  // BLOCK_MEDIUM_AND_ABOVE → padrão recomendado
-  // BLOCK_ONLY_HIGH   → bloqueia apenas conteúdo claramente prejudicial
   safetySettings: [
-    { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-    { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+    { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+    { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
     { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
     { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
   ],
 
-  // Timeout da requisição em milissegundos
-  // Gemini pode demorar alguns segundos em horários de pico
-  timeout: 30000,
+  timeout: 40000,
 };
 
-// Retorna a URL completa do endpoint
 geminiConfig.getEndpointUrl = () => {
   return `${geminiConfig.baseUrl}/${geminiConfig.model}:${geminiConfig.action}`;
 };

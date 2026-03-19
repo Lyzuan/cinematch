@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const recommendController = require('../controllers/recommendController');
+const { getSondagem, getRecommendations } = require('../controllers/recommendController');
 
-// POST /api/recommend - Gera recomendações de filmes
-router.post('/recommend', recommendController.getRecommendations);
+// ETAPA 1: busca 5 itens para sondagem do gosto do usuário
+router.post('/sondagem', getSondagem);
+
+// ETAPA 2: gera recomendações personalizadas baseadas nas avaliações
+router.post('/recommend', getRecommendations);
 
 module.exports = router;

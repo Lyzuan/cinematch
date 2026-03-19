@@ -3,7 +3,6 @@
   padding: 60px 0 80px;
 }
 
-/* Header */
 .home-header {
   text-align: center;
   margin-bottom: 52px;
@@ -28,7 +27,6 @@
   margin: 0 auto;
 }
 
-/* Formulário */
 .home-form {
   background: var(--bg-surface);
   border: 1.5px solid var(--border);
@@ -36,11 +34,56 @@
   padding: 40px;
 }
 
-/* Seções de seleção */
 .selection-section {
-  /* sem padding extra — usa o do form */
+  /* container das seções */
 }
 
+/* Grade de tipos de conteúdo — 5 botões em 2 linhas */
+.content-type-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.content-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  color: var(--text-secondary);
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.content-type-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.content-type-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent-light);
+}
+
+.content-type-btn__emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.content-type-btn__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Chips de gênero */
 .chips-group {
   display: flex;
   flex-wrap: wrap;
@@ -61,11 +104,6 @@
   gap: 12px;
 }
 
-.submit-hint {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -78,17 +116,13 @@
   color: var(--text-secondary);
 }
 
-/* Responsivo */
 @media (max-width: 600px) {
-  .home-page {
-    padding: 40px 0 60px;
-  }
+  .home-page { padding: 40px 0 60px; }
+  .home-header__title { font-size: 2.2rem; }
+  .home-form { padding: 28px 20px; }
+  .content-type-group { grid-template-columns: repeat(2, 1fr); }
+}
 
-  .home-header__title {
-    font-size: 2.2rem;
-  }
-
-  .home-form {
-    padding: 28px 20px;
-  }
+@media (max-width: 380px) {
+  .content-type-group { grid-template-columns: 1fr 1fr; }
 }
