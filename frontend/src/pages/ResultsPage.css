@@ -10,14 +10,17 @@
   gap: 14px;
 }
 
-.results-back {
-  align-self: flex-start;
+.results-back { align-self: flex-start; }
+
+.results-header__text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .results-title {
   font-size: 2rem;
   color: var(--text-primary);
-  margin-bottom: 6px;
 }
 
 .results-subtitle {
@@ -25,14 +28,14 @@
   color: var(--text-secondary);
 }
 
-/* Lista de resultados */
+/* Lista */
 .movies-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* Card de resultado */
+/* Card */
 .result-card {
   display: flex;
   gap: 20px;
@@ -53,7 +56,6 @@
   object-fit: cover;
   border-radius: 6px;
   flex-shrink: 0;
-  display: block;
 }
 
 .result-card__info {
@@ -69,16 +71,8 @@
   align-items: center;
 }
 
-.meta-year {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-.meta-rating {
-  font-size: 0.8rem;
-  color: var(--accent);
-  font-weight: 600;
-}
+.meta-year { font-size: 0.78rem; color: var(--text-muted); }
+.meta-rating { font-size: 0.8rem; color: var(--accent); font-weight: 600; }
 
 .result-card__title {
   font-size: 1.1rem;
@@ -98,6 +92,30 @@
   margin-top: 8px;
   padding: 10px 22px;
   font-size: 0.9rem;
+}
+
+/* Botão Ver todos */
+.results-view-all {
+  margin-top: 32px;
+  padding: 24px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.results-view-all__hint {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.results-view-all__btn {
+  font-size: 0.92rem;
+  padding: 11px 28px;
 }
 
 @media (max-width: 500px) {

@@ -3,23 +3,23 @@ import HomePage from './pages/HomePage';
 import SondagemPage from './pages/SondagemPage';
 import ResultsPage from './pages/ResultsPage';
 import FinalPage from './pages/FinalPage';
+import ListPage from './pages/ListPage';
 
 /**
- * App.js — Gerencia o fluxo entre as 4 etapas da aplicação:
- *
- * home → sondagem → results → final
+ * App.js — Fluxo de 5 páginas:
+ * home → sondagem → results → final → list (opcional)
  */
 function App() {
   const [page, setPage] = useState('home');
   const [sessionData, setSessionData] = useState({
     genres: [],
     mood: '',
-    contentType: 'movie', // 'movie' | 'tv'
-    candidates: [],       // lista completa do TMDB (reutilizada na etapa 2)
-    sondagem: [],         // 5 itens para avaliação
-    avaliacoes: [],       // avaliações do usuário { title, stars }
-    recommendations: [],  // recomendações finais da IA
-    chosen: null,         // item escolhido pelo usuário no final
+    contentType: 'movie',
+    candidates: [],
+    sondagem: [],
+    avaliacoes: [],
+    recommendations: [],
+    chosen: null,
   });
 
   const goTo = (nextPage, data = {}) => {
@@ -28,7 +28,11 @@ function App() {
   };
 
   const restart = () => {
-    setSessionData({ genres: [], mood: '', contentType: 'movie', candidates: [], sondagem: [], avaliacoes: [], recommendations: [], chosen: null });
+    setSessionData({
+      genres: [], mood: '', contentType: 'movie',
+      candidates: [], sondagem: [], avaliacoes: [],
+      recommendations: [], chosen: null,
+    });
     setPage('home');
   };
 
@@ -49,6 +53,7 @@ function App() {
           sessionData={sessionData}
           onChoose={(chosen) => goTo('final', { chosen })}
           onBack={() => goTo('sondagem')}
+          onViewList={() => goTo('list')}
         />
       )}
       {page === 'final' && (
@@ -56,6 +61,16 @@ function App() {
           chosen={sessionData.chosen}
           contentType={sessionData.contentType}
           onRestart={restart}
+          onViewList={() => goTo('list')}
+        />
+      )}
+      {page === 'list' && (
+        <ListPage
+          chosen={sessionData.chosen}
+          recommendations={sessionData.recommendations}
+          contentType={sessionData.contentType}
+          onBack={() => goTo(sessionData.chosen ? 'final' : 'results')}
+          onChooseNew={(newItem) => goTo('final', { chosen: newItem })}
         />
       )}
     </>

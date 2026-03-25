@@ -15,7 +15,6 @@
   max-width: 420px;
 }
 
-/* Poster do filme/série escolhido */
 .final-poster {
   width: 120px;
   height: 180px;
@@ -25,10 +24,7 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-.final-emoji {
-  font-size: 3rem;
-  line-height: 1;
-}
+.final-emoji { font-size: 3rem; line-height: 1; }
 
 .final-message {
   font-size: 1.9rem;
@@ -52,9 +48,33 @@
   font-weight: 600;
 }
 
-.final-restart {
-  margin-top: 16px;
+/* Botões */
+.final-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.final-btn-details {
+  width: 100%;
+  max-width: 280px;
+  padding: 13px 20px;
+  font-size: 0.95rem;
+}
+
+.final-btn-list {
+  width: 100%;
+  max-width: 280px;
+  padding: 11px 20px;
   font-size: 0.9rem;
+}
+
+.final-restart {
+  font-size: 0.85rem;
+  margin-top: 4px;
 }
 
 @media (max-width: 480px) {

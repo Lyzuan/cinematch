@@ -46,10 +46,14 @@ function HomePage({ onNext }) {
     setSelectedGenres([]);
   };
 
+  const MAX_GENRES = 5;
+
   const toggleGenre = (genre) => {
-    setSelectedGenres((prev) =>
-      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
-    );
+    setSelectedGenres((prev) => {
+      if (prev.includes(genre)) return prev.filter((g) => g !== genre);
+      if (prev.length >= MAX_GENRES) return prev; // limite de 5
+      return [...prev, genre];
+    });
   };
 
   const currentGenres = GENRES_BY_TYPE[contentType] || [];
@@ -132,11 +136,12 @@ function HomePage({ onNext }) {
                       key={genre}
                       label={genre}
                       active={selectedGenres.includes(genre)}
+                      disabled={!selectedGenres.includes(genre) && selectedGenres.length >= MAX_GENRES}
                       onClick={() => toggleGenre(genre)}
                     />
                   ))}
                 </div>
-                <p className="selection-hint">Selecione um ou mais gêneros</p>
+                <p className="selection-hint">Selecione até {MAX_GENRES} gêneros ({selectedGenres.length}/{MAX_GENRES})</p>
               </section>
             </>
           )}

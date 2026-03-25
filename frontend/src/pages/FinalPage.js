@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import DetailsModal from '../components/DetailsModal';
 import './FinalPage.css';
 
 const PLACEHOLDER = 'https://via.placeholder.com/120x180/222225/5a5856?text=Sem+Poster';
 
-// Mensagem e emoji por tipo de conteúdo
 const FINAL_CONFIG = {
   movie:       { emoji: '🍿', message: 'Bom filme 🍿, te vejo em breve!' },
   tv:          { emoji: '📺', message: 'Boa série 📺, te vejo em breve!' },
@@ -13,9 +13,13 @@ const FINAL_CONFIG = {
 };
 
 /**
- * FinalPage — Tela de encerramento após o usuário escolher o que vai assistir
+ * FinalPage — Tela de encerramento com opções:
+ * - Mais detalhes (abre modal com sinopse completa + streaming)
+ * - Ver lista (navega para ListPage com mais recomendações)
+ * - Recomeçar
  */
-function FinalPage({ chosen, contentType, onRestart }) {
+function FinalPage({ chosen, contentType, onRestart, onViewList }) {
+  const [showDetails, setShowDetails] = useState(false);
   const config = FINAL_CONFIG[contentType] || FINAL_CONFIG.movie;
 
   return (
@@ -43,11 +47,40 @@ function FinalPage({ chosen, contentType, onRestart }) {
           <p className="final-rating">★ {Number(chosen.rating).toFixed(1)} no TMDB</p>
         )}
 
-        <button className="btn-ghost final-restart" onClick={onRestart}>
-          ↩ Buscar outra sugestão
-        </button>
+        {/* Ações */}
+        <div className="final-actions">
+          {/* Mais detalhes — sinopse completa + onde assistir */}
+          <button
+            className="btn-primary final-btn-details"
+            onClick={() => setShowDetails(true)}
+          >
+            ℹ️ Mais detalhes
+          </button>
+
+          {/* Ver lista — mais recomendações */}
+          <button
+            className="btn-ghost final-btn-list"
+            onClick={onViewList}
+          >
+            📋 Ver lista completa
+          </button>
+
+          {/* Recomeçar */}
+          <button className="btn-ghost final-restart" onClick={onRestart}>
+            ↩ Buscar outra sugestão
+          </button>
+        </div>
 
       </div>
+
+      {/* Modal de detalhes */}
+      {showDetails && (
+        <DetailsModal
+          item={chosen}
+          contentType={contentType}
+          onClose={() => setShowDetails(false)}
+        />
+      )}
     </div>
   );
 }

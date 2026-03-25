@@ -26,3 +26,19 @@ export const fetchRecommendations = async (genres, mood, contentType, candidates
   });
   return response.data.recommendations;
 };
+
+/**
+ * Busca detalhes completos de um item (sinopse, streaming, etc.)
+ */
+export const fetchDetails = async (tmdbId, contentType) => {
+  const response = await api.get(`/details/${tmdbId}?contentType=${contentType}`);
+  return response.data.details;
+};
+
+/**
+ * Busca itens similares para a lista expandida
+ */
+export const fetchSimilar = async (tmdbId, contentType) => {
+  const response = await api.get(`/similar/${tmdbId}?contentType=${contentType}`);
+  return response.data.similar;
+};

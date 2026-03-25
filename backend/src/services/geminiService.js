@@ -204,7 +204,8 @@ const getSondagem = async ({ genres, mood, contentType, candidates }) => {
       const candidate = findCandidate(candidates, rec.title);
       if (!candidate) return null;
       return {
-        title: candidate.title, // usa o título exato do TMDB
+        id: candidate.id || null,          // necessário para detalhes e similares
+        title: candidate.title,
         poster_path: candidate.poster_path || null,
         rating: candidate.rating || null,
         release_year: candidate.release_year || null,
@@ -220,6 +221,7 @@ const getSondagem = async ({ genres, mood, contentType, candidates }) => {
       .filter((c) => !usedTitles.has(c.title.toLowerCase()))
       .slice(0, 5 - enriched.length)
       .map((c) => ({
+        id: c.id || null,
         title: c.title,
         poster_path: c.poster_path || null,
         rating: c.rating || null,
@@ -304,6 +306,7 @@ const getRecomendacoes = async ({ genres, mood, contentType, candidates, avaliac
       const candidate = findCandidate(candidates, rec.title);
       if (!candidate) return null;
       return {
+        id: candidate.id || null,
         title: candidate.title,
         justification: rec.justification || 'Recomendado com base no seu perfil.',
         poster_path: candidate.poster_path || null,
@@ -321,6 +324,7 @@ const getRecomendacoes = async ({ genres, mood, contentType, candidates, avaliac
       .filter((c) => !usedTitles.has(c.title.toLowerCase()) && !jaVistos.has(c.title.toLowerCase()))
       .slice(0, 5 - enriched.length)
       .map((c) => ({
+        id: c.id || null,
         title: c.title,
         justification: 'Recomendado com base nos seus gêneros favoritos.',
         poster_path: c.poster_path || null,

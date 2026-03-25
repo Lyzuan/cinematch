@@ -6,11 +6,21 @@ const PLACEHOLDER = 'https://via.placeholder.com/80x120/222225/5a5856?text=Sem+P
 /**
  * ResultsPage — Etapa 3 do fluxo
  * Exibe as 5 recomendações personalizadas pela IA
- * O usuário escolhe uma para assistir e avança para a tela final
+ * O usuário pode escolher um item ou ver a lista completa
  */
-function ResultsPage({ sessionData, onChoose, onBack }) {
+function ResultsPage({ sessionData, onChoose, onBack, onViewList }) {
   const { recommendations, contentType } = sessionData;
-  const tipo = contentType === 'tv' ? 'série' : 'filme';
+
+  const CONTENT_LABEL = {
+    movie: 'filmes', tv: 'séries', anime: 'animes',
+    dorama: 'doramas', documentary: 'documentários',
+  };
+  const CONTENT_EMOJI = {
+    movie: '🍿', tv: '📺', anime: '🎌', dorama: '🌸', documentary: '🎥',
+  };
+
+  const tipoPlural = CONTENT_LABEL[contentType] || 'itens';
+  const emoji = CONTENT_EMOJI[contentType] || '🍿';
 
   return (
     <div className="results-page">
@@ -18,19 +28,19 @@ function ResultsPage({ sessionData, onChoose, onBack }) {
 
         <header className="results-header">
           <button className="btn-ghost results-back" onClick={onBack}>← Voltar</button>
-          <div>
+          <div className="results-header__text">
             <h1 className="results-title">Recomendações para você</h1>
             <p className="results-subtitle">
-              A IA analisou seu gosto e selecionou esses {tipo}s. Escolha o que vai assistir:
+              A IA selecionou esses {tipoPlural}. Escolha o que vai assistir ou explore mais opções.
             </p>
           </div>
         </header>
 
+        {/* Lista de recomendações */}
         <div className="movies-list">
           {recommendations.map((item) => (
             <div key={item.title} className="result-card">
 
-              {/* Poster */}
               <img
                 className="result-card__poster"
                 src={item.poster_path || PLACEHOLDER}
@@ -38,7 +48,6 @@ function ResultsPage({ sessionData, onChoose, onBack }) {
                 onError={(e) => { e.target.src = PLACEHOLDER; }}
               />
 
-              {/* Informações */}
               <div className="result-card__info">
                 <div className="result-card__meta">
                   {item.release_year && <span className="meta-year">{item.release_year}</span>}
@@ -48,19 +57,26 @@ function ResultsPage({ sessionData, onChoose, onBack }) {
                 </div>
 
                 <h3 className="result-card__title">{item.title}</h3>
-
                 <p className="result-card__justification">{item.justification}</p>
 
                 <button
                   className="btn-primary btn-choose"
                   onClick={() => onChoose(item)}
                 >
-                  {contentType === 'tv' ? '📺' : '🍿'} Vou assistir esse
+                  {emoji} Vou assistir esse
                 </button>
               </div>
 
             </div>
           ))}
+        </div>
+
+        {/* Botão Ver todos — navega para ListPage sem precisar escolher */}
+        <div className="results-view-all">
+          <p className="results-view-all__hint">Não encontrou o que queria?</p>
+          <button className="btn-ghost results-view-all__btn" onClick={onViewList}>
+            📋 Ver lista completa de sugestões
+          </button>
         </div>
 
       </div>
