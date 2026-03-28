@@ -10,6 +10,15 @@ const CONTENT_TYPE_LABEL = {
   documentary: 'documentários',
 };
 
+// Restrição explícita por tipo — instrução adicional nos prompts para evitar mistura
+const CONTENT_TYPE_RESTRICTION = {
+  movie:       'IMPORTANTE: Selecione APENAS filmes (não séries, não animes, não animações).',
+  tv:          'IMPORTANTE: Selecione APENAS séries de TV/streaming (não filmes, não animes, não animações japonesas).',
+  anime:       'IMPORTANTE: Selecione APENAS animes japoneses animados (não filmes, não séries ocidentais, não doramas).',
+  dorama:      'IMPORTANTE: Selecione APENAS doramas asiáticos (coreano, japonês ou chinês) — não animes, não filmes ocidentais.',
+  documentary: 'IMPORTANTE: Selecione APENAS documentários (não filmes de ficção, não séries).',
+};
+
 // ─────────────────────────────────────────────
 // Utilitários
 // ─────────────────────────────────────────────
@@ -173,6 +182,8 @@ PREFERÊNCIAS DO USUÁRIO:
 LISTA DISPONÍVEL (${candidates.length} itens):
 ${lista}
 
+${CONTENT_TYPE_RESTRICTION[contentType] || ''}
+
 REGRAS OBRIGATÓRIAS:
 - Retorne EXATAMENTE 5 itens
 - Use APENAS títulos da lista acima, copiados exatamente como aparecem
@@ -272,6 +283,8 @@ ANÁLISE DAS AVALIAÇÕES:
 
 LISTA DE ${tipo.toUpperCase()} DISPONÍVEIS (já excluídos os assistidos):
 ${lista}
+
+${CONTENT_TYPE_RESTRICTION[contentType] || ''}
 
 REGRAS OBRIGATÓRIAS:
 - Retorne EXATAMENTE 5 itens

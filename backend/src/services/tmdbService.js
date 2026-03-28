@@ -159,9 +159,18 @@ const fetchDetails = async (tmdbId, contentType) => {
 };
 
 /**
- * Busca mais recomendações do TMDB baseadas em um item específico.
- * Usado na lista expandida de recomendações.
- * @param {number} tmdbId
+ * Busca mais recomendações do TMDB respeitando o tipo de conteúdo original.
+ *
+ * Para cada tipo aplica os mesmos filtros usados em fetchByGenres:
+ *   - anime:       origin_country=JP + genre=16
+ *   - dorama:      origin_country=KR|JP|CN, sem animação
+ *   - tv:          sem animação, sem anime
+ *   - movie:       sem animação
+ *   - documentary: genre=99
+ *
+ * Usa discover em vez de /similar para ter controle total dos filtros.
+ *
+ * @param {number} tmdbId     - ID do item base (usado para buscar gêneros)
  * @param {string} contentType
  */
 const fetchSimilar = async (tmdbId, contentType) => {
@@ -170,26 +179,92 @@ const fetchSimilar = async (tmdbId, contentType) => {
   }
 
   const isTV = ['tv', 'anime', 'dorama'].includes(contentType);
-  const endpoint = isTV ? `tv/${tmdbId}/similar` : `movie/${tmdbId}/similar`;
+
+  // Passo 1: busca os gêneros do item base para usar como filtro no discover
+  let baseGenreIds = [];
+  try {
+    const detailEndpoint = isTV ? `tv/${tmdbId}` : `movie/${tmdbId}`;
+    const detailRes = await axios.get(`${tmdbConfig.baseUrl}/${detailEndpoint}`, {
+      timeout: tmdbConfig.timeout,
+      params: { api_key: process.env.TMDB_API_KEY, language: tmdbConfig.language },
+    });
+    baseGenreIds = (detailRes.data.genres || []).map((g) => g.id);
+  } catch {
+    // se falhar, continua sem filtro de gênero
+  }
+
+  // Passo 2: monta parâmetros do discover respeitando o contentType
+  const params = {
+    api_key: process.env.TMDB_API_KEY,
+    language: tmdbConfig.language,
+    sort_by: 'vote_average.desc',
+    'vote_average.gte': 6.5,
+    'vote_count.gte': 100,
+    page: 1,
+  };
+
+  let endpoint;
+
+  switch (contentType) {
+    case 'movie': {
+      endpoint = 'discover/movie';
+      params.without_genres = '16'; // sem animação
+      if (baseGenreIds.length) params.with_genres = baseGenreIds.slice(0, 2).join(',');
+      break;
+    }
+    case 'tv': {
+      endpoint = 'discover/tv';
+      params.without_genres = '16';             // sem animação
+      params.without_keywords = '210024';        // sem anime
+      if (baseGenreIds.length) params.with_genres = baseGenreIds.slice(0, 2).join(',');
+      break;
+    }
+    case 'anime': {
+      endpoint = 'discover/tv';
+      params.with_genres = '16';                // animação obrigatória
+      params.with_origin_country = 'JP';         // origem japonesa obrigatória
+      params['vote_count.gte'] = 50;
+      // adiciona gêneros extras do item base (exceto animação que já está)
+      const extras = baseGenreIds.filter((id) => id !== 16).slice(0, 2);
+      if (extras.length) params.with_genres += `|${extras.join('|')}`;
+      break;
+    }
+    case 'dorama': {
+      endpoint = 'discover/tv';
+      params.with_origin_country = 'KR|JP|CN';
+      params.without_genres = '16';             // sem animação
+      params.without_keywords = '210024';        // sem anime
+      params['vote_count.gte'] = 30;
+      if (baseGenreIds.length) params.with_genres = baseGenreIds.slice(0, 2).join(',');
+      break;
+    }
+    case 'documentary': {
+      endpoint = 'discover/movie';
+      params.with_genres = '99';                // documentário sempre forçado
+      break;
+    }
+    default:
+      endpoint = 'discover/movie';
+  }
 
   const response = await axios.get(`${tmdbConfig.baseUrl}/${endpoint}`, {
     timeout: tmdbConfig.timeout,
-    params: {
-      api_key: process.env.TMDB_API_KEY,
-      language: tmdbConfig.language,
-      page: 1,
-    },
+    params,
   });
 
-  return response.data.results.slice(0, 10).map((item) => ({
-    id: item.id,
-    title: item.title || item.name,
-    overview: item.overview || 'Sem sinopse disponível',
-    rating: item.vote_average,
-    release_year: (item.release_date || item.first_air_date || '').split('-')[0] || 'N/A',
-    poster_path: tmdbConfig.getPosterUrl(item.poster_path),
-    content_type: contentType,
-  }));
+  // Exclui o próprio item base da lista
+  return response.data.results
+    .filter((item) => item.id !== tmdbId)
+    .slice(0, 10)
+    .map((item) => ({
+      id: item.id,
+      title: item.title || item.name,
+      overview: item.overview || 'Sem sinopse disponível',
+      rating: item.vote_average,
+      release_year: (item.release_date || item.first_air_date || '').split('-')[0] || 'N/A',
+      poster_path: tmdbConfig.getPosterUrl(item.poster_path),
+      content_type: contentType,
+    }));
 };
 
 const getGenreIds = (genres, genreMap) => {
